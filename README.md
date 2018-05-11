@@ -22,7 +22,7 @@ $ tiny status // check rest free times this month
 ### Tips
 这个库发布在私有npm上 
 如果要下载使用
-可以按一下步骤操作
+可以按以下步骤操作
 ```
 $ git clone git@github.com:kevinaskin/tinypng-cmd.git
 $ npm link
