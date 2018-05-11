@@ -1,0 +1,43 @@
+#! /usr/bin/env node
+
+const program = require('commander')
+const tinify = require('tinify')
+const chalk = require('chalk')
+const ora = require('ora')
+const fs = require('fs')
+const path = require('path')
+
+const config = require('../config/config')
+const { key, checked } = config
+
+
+program.on('--help', () => {
+    console.log()
+    console.log('  Tips:')
+    console.log()
+    console.log(chalk.gray('    # you\'re supposed to enter a tinypng API key '))
+    console.log(chalk.gray('    # and validated first '))
+    console.log()
+    console.log('    $ tiny <set> [key]')
+    console.log()
+})
+
+program
+    .parse(process.argv)
+
+if (key && checked) {
+    tinify.key = key
+    const spinner = ora('fetching data ...')
+    spinner.start()
+    tinify.validate(err => {
+        spinner.stop()
+        if (err) throw err
+
+        console.log()
+        console.log(`  [message] You have ${chalk.green(500 - tinify.compressionCount)} free times rest this month with current key`)
+        console.log()        
+    })
+} else {
+    console.log(chalk.yellow(`  [warning] You have no key yet`))
+    program.help()
+}

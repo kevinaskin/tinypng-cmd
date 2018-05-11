@@ -1,0 +1,13 @@
+#! /usr/bin/env node
+
+const program = require('commander')
+
+const { version } = require('../package')
+
+program
+    .version(version)
+    .description('For front-end developer to compress images through tinypng\'s API')
+    .command('compress <dir>', 'choose file to compress')
+    .command('set <key>', 'set tinypng\'s api key of your own')
+    .command('status', 'check rest times tinypng\'s api key can use this month')
+    .parse(process.argv)

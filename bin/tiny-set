@@ -1,0 +1,59 @@
+#! /usr/bin/env node
+
+const program = require('commander')
+const tinify = require('tinify')
+const ora = require('ora')
+const chalk = require('chalk')
+const inquirer = require('inquirer')
+const fs = require('fs')
+const path = require('path')
+
+const config = require('../config/config')
+
+program
+    .parse(process.argv)
+
+const { args } = program
+
+if (!args.length) {
+    console.log('key is required')
+    process.exit(1)
+}
+
+const key = args[0]
+console.log(`  [set] tinypng API key -> ${key}`)
+console.log()
+const spinner = ora('validating key ...')
+spinner.start()
+tinify.key = key
+tinify.validate(err => {
+    spinner.stop()
+    if (err) {
+        console.log(chalk.yellow(`  [warning] key is wrong`))
+        process.exit(1)
+    }
+
+    inquirer.prompt([{
+        type: 'confirm',
+        message: `  ${!!config.key ? 'Replacing' : 'Saving'} the tinypng API key ?`,
+        name: 'ok'
+    }]).then(answer => {
+        if (answer.ok) {
+            handleSavingKey(key, true)
+        } else {
+            console.log(chalk.green(`  [message] key set success`))
+        }
+    })
+
+})
+
+function handleSavingKey(key, checked) {
+    config.key = key
+    config.checked = checked
+    fs.writeFileSync(
+        path.resolve(__dirname, '../config/config.json'),
+        JSON.stringify(config),
+        'utf-8'
+    )
+    console.log(chalk.green(`  [message] key saved success`))
+}

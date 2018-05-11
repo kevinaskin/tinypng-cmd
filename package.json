@@ -1,0 +1,21 @@
+{
+  "name": "tinypng-cmd",
+  "version": "1.0.2",
+  "description": "",
+  "bin": {
+    "tiny": "bin/tiny"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "commander": "^2.15.1",
+    "inquirer": "^5.2.0",
+    "ora": "^2.1.0",
+    "tinify": "^1.5.0"
+  }
+}
