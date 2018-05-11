@@ -9,6 +9,7 @@ const fs = require('fs')
 const path = require('path')
 
 const config = require('../config/config')
+const log = require('../utils/log')
 
 program
     .parse(process.argv)
@@ -16,20 +17,19 @@ program
 const { args } = program
 
 if (!args.length) {
-    console.log('key is required')
+    log('key is required', 'red')
     process.exit(1)
 }
 
 const key = args[0]
-console.log(`  [set] tinypng API key -> ${key}`)
-console.log()
+log(`  [set] tinypng API key -> ${key}`, 'green')
 const spinner = ora('validating key ...')
 spinner.start()
 tinify.key = key
 tinify.validate(err => {
     spinner.stop()
     if (err) {
-        console.log(chalk.yellow(`  [warning] key is wrong`))
+        log(`  [warning] key is wrong`, 'yellow')
         process.exit(1)
     }
 
@@ -41,7 +41,7 @@ tinify.validate(err => {
         if (answer.ok) {
             handleSavingKey(key, true)
         } else {
-            console.log(chalk.green(`  [message] key set success`))
+            log(`  [message] key set success`, 'green')
         }
     })
 
@@ -55,5 +55,5 @@ function handleSavingKey(key, checked) {
         JSON.stringify(config),
         'utf-8'
     )
-    console.log(chalk.green(`  [message] key saved success`))
+    log(`  [message] key saved success`, 'green')
 }

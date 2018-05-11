@@ -25,6 +25,4 @@ $ tiny status // check rest free times this month
 
 ## Bug Report
 
-email: lixiaofeng02@bianfeng.com
-
-QQ: 423141948
+email: kevinaskin@minus.live

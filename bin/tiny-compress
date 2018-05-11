@@ -9,17 +9,15 @@ const fs = require('fs')
 const path = require('path')
 
 const config = require('../config/config')
+const log = require('../utils/log')
 
 program
     .parse(process.argv)
 
-const spinner = ora('Loading ... ')
 
 const { args } = program
 if (!args.length) {
-    console.log()
-    console.log(chalk.yellow('  [warning] dir|file name is required'))
-    console.log()
+    log('  [warning] dir name is required', 'yellow')
     program.help()
 }
 
@@ -27,16 +25,14 @@ const { key, checked } = config
 if (key && checked) {
     tinify.key = key
 } else {
-    console.log()
-    console.log(chalk.yellow('  [warning] API key is required'))
-    console.log()
+    log('  [warning] API key is required', 'yellow')
     process.exit(1)
 }
 
 const _path = args[0]
 const resolvedPath = path.resolve(process.cwd(), _path)
-console.log(resolvedPath)
 
+const spinner = ora('Loading ... ')
 spinner.start()
 fs.readdir(resolvedPath, (err, files) => {
     spinner.stop()
@@ -51,6 +47,7 @@ fs.readdir(resolvedPath, (err, files) => {
         msg += '*  ' + file + ' \n'
     })
     msg += ' \n comfirm to compress or not?'
+
     inquirer.prompt([{
         type: 'confirm',
         message: msg,
@@ -59,45 +56,42 @@ fs.readdir(resolvedPath, (err, files) => {
         if (answer.ok) {
             handleFiles(filesFiltered)
         } else {
-            console.log(chalk.yellow(`  [message] Service finished`))
+            log(`  [message] Service finished`, 'yellow')
         }
     })
-    
 })
 
 function handleFiles(files) {
-    console.log(chalk.green(`  [message] Compressing ${files.length} images ...`))
-    console.log()
+    log(`  [message] Compressing ${files.length} images ...`, 'green')
     const hasCompressedImages = fs.existsSync(path.resolve(resolvedPath, 'CompressedImages'))
     if (hasCompressedImages) {
-        handleCompress()
+        handleCompress(files)
     } else {
         fs.mkdir(path.resolve(resolvedPath, 'CompressedImages'), err => {
             if (err) throw err
     
-            handleCompress()
+            handleCompress(files)
         })
     }
-    
-    function handleCompress() {
-        let count = 0
-        const len = files.length
-        const waiting = ora('compressing ...')
-        waiting.start()
-        
-        files.forEach(file => {
-            const source = tinify.fromFile(path.resolve(resolvedPath, file))
-            source.toFile(path.resolve(resolvedPath, 'CompressedImages', file), err => {
-                if (err) throw err
+}
 
-                count++
-                console.log(chalk.green(`  [message] ${file} is compressed SUCCESS`))
-                if (count === len) {
-                    waiting.stop()
-                    console.log()
-                    console.log(chalk.blue(`  Thanks for using.`))
-                }
-            })
+function handleCompress(files) {
+    let count = 0
+    const len = files.length
+    const waiting = ora('compressing ...')
+    waiting.start()
+    
+    files.forEach(file => {
+        const source = tinify.fromFile(path.resolve(resolvedPath, file))
+        source.toFile(path.resolve(resolvedPath, 'CompressedImages', file), err => {
+            if (err) throw err
+
+            count++
+            log(`  [message] ${file} is compressed SUCCESS`, 'green')
+            if (count === len) {
+                waiting.stop()
+                log(`  Thanks for using.`, 'blue')
+            }
         })
-    }
+    })
 }
